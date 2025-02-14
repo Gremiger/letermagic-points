@@ -1,19 +1,29 @@
 
+import React from "react";
 import { PointsTable } from "@/components/PointsTable";
+import { ThemeSelector } from "@/components/ThemeSelector";
+import { THEMES, ThemeStyle } from "@/types/theme";
 
 const Index = () => {
+  const [currentTheme, setCurrentTheme] = React.useState<ThemeStyle>('meme');
+  const theme = THEMES.find(t => t.id === currentTheme) || THEMES[0];
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#9b87f5] via-[#D946EF] to-[#F97316] p-8">
+    <div className={`min-h-screen bg-gradient-to-br ${theme.bgGradient} p-8 transition-colors duration-300`}>
+      <ThemeSelector
+        currentTheme={currentTheme}
+        onThemeChange={setCurrentTheme}
+      />
       <div className="max-w-4xl mx-auto space-y-6">
-        <div className="text-center space-y-2 bg-white bg-opacity-90 backdrop-blur-lg rounded-xl p-6 shadow-lg border-2 border-primary hover:border-[#D946EF] transition-colors">
-          <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-[#D946EF]">
+        <div className={`text-center space-y-2 ${theme.cardBg} backdrop-blur-lg rounded-xl p-6 shadow-lg border-2 ${theme.borderColor} transition-colors`}>
+          <h1 className={`text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r ${theme.titleGradient}`}>
             LeTim Points 🏆
           </h1>
           <p className="text-gray-600">
             El sistema de puntos más memero del multiverso 🌌
           </p>
         </div>
-        <PointsTable />
+        <PointsTable theme={theme} />
       </div>
     </div>
   );

@@ -1,10 +1,10 @@
-
 import React from "react";
 import { UserPlus, UserMinus, Plus, Minus, Trash2, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import * as Dialog from "@radix-ui/react-dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
+import { Theme } from "@/types/theme";
 
 interface PointCategory {
   id: string;
@@ -59,7 +59,11 @@ const DEFAULT_CATEGORIES: PointCategory[] = [
   }
 ];
 
-export const PointsTable = () => {
+interface PointsTableProps {
+  theme: Theme;
+}
+
+export const PointsTable = ({ theme }: PointsTableProps) => {
   const [friends, setFriends] = React.useState<Friend[]>([]);
   const [newFriendName, setNewFriendName] = React.useState("");
   const [categories, setCategories] = React.useState<PointCategory[]>(DEFAULT_CATEGORIES);
@@ -202,11 +206,11 @@ export const PointsTable = () => {
             value={newFriendName}
             onChange={(e) => setNewFriendName(e.target.value)}
             placeholder="Nombre del amigo"
-            className="flex-1 px-4 py-2 rounded-lg border border-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all bg-white bg-opacity-90"
+            className={`flex-1 px-4 py-2 rounded-lg border ${theme.borderColor} focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all ${theme.cardBg}`}
           />
           <button
             onClick={addFriend}
-            className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-opacity-90 transition-all animate-float"
+            className={`flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-opacity-90 transition-all animate-float`}
           >
             <UserPlus size={20} />
             Invocar Amigo
@@ -219,14 +223,14 @@ export const PointsTable = () => {
             value={newCategory.name}
             onChange={(e) => setNewCategory({ ...newCategory, name: e.target.value })}
             placeholder="Nueva categoría (ej: 'Raid Boss 🗡️')"
-            className="flex-1 px-4 py-2 rounded-lg border border-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all bg-white bg-opacity-90"
+            className={`flex-1 px-4 py-2 rounded-lg border ${theme.borderColor} focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all ${theme.cardBg}`}
           />
           <input
             type="number"
             value={newCategory.points || ""}
             onChange={(e) => setNewCategory({ ...newCategory, points: Number(e.target.value) })}
             placeholder="Puntos"
-            className="w-24 px-4 py-2 rounded-lg border border-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all bg-white bg-opacity-90"
+            className={`w-24 px-4 py-2 rounded-lg border ${theme.borderColor} focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all ${theme.cardBg}`}
           />
           <button
             onClick={addCategory}
@@ -238,7 +242,7 @@ export const PointsTable = () => {
         </div>
       </div>
 
-      <div className="bg-white bg-opacity-75 backdrop-blur-lg rounded-xl shadow-lg overflow-hidden border-2 border-primary hover:border-[#D946EF] transition-colors">
+      <div className={`${theme.cardBg} backdrop-blur-lg rounded-xl shadow-lg overflow-hidden border-2 ${theme.borderColor} transition-colors`}>
         <table className="w-full">
           <thead className="bg-primary bg-opacity-10">
             <tr>
@@ -316,7 +320,7 @@ export const PointsTable = () => {
       <Dialog.Root open={!!selectedFriend} onOpenChange={() => setSelectedFriend(null)}>
         <Dialog.Portal>
           <Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm animate-fadeIn" />
-          <Dialog.Content className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-white rounded-xl shadow-lg p-6 animate-fadeIn">
+          <Dialog.Content className={`fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-lg ${theme.cardBg} rounded-xl shadow-lg p-6 animate-fadeIn border-2 ${theme.borderColor}`}>
             <div className="flex justify-between items-center mb-4">
               <Dialog.Title className="text-xl font-bold">
                 Historial de {selectedFriend?.name} 📊
