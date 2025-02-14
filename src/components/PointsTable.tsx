@@ -31,7 +31,7 @@ interface Friend {
 const DEFAULT_CATEGORIES: PointCategory[] = [
   {
     id: "1",
-    name: "Discord Gaming 🎮",
+    name: "Discord 🎮",
     points: 5,
     backgroundColor: "bg-[#8B5CF6]",
     textColor: "text-white"
@@ -45,14 +45,14 @@ const DEFAULT_CATEGORIES: PointCategory[] = [
   },
   {
     id: "3",
-    name: "WhatsApp Memes 🤣",
+    name: "WhatsApp",
     points: 3,
     backgroundColor: "bg-[#D946EF]",
     textColor: "text-white"
   },
   {
     id: "4",
-    name: "F por Inactividad 💀",
+    name: "Inactividad 💀",
     points: -5,
     backgroundColor: "bg-[#DC2626]",
     textColor: "text-white"
@@ -77,7 +77,7 @@ export const PointsTable = ({ theme }: PointsTableProps) => {
   const addFriend = () => {
     if (!newFriendName.trim()) {
       toast({
-        title: "Bruh... 🤦‍♂️",
+        title: "... 🤦‍♂️",
         description: "¿Cómo vas a agregar alguien sin nombre?",
         variant: "destructive",
       });
@@ -205,7 +205,7 @@ export const PointsTable = ({ theme }: PointsTableProps) => {
             type="text"
             value={newFriendName}
             onChange={(e) => setNewFriendName(e.target.value)}
-            placeholder="Nombre del amigo"
+            placeholder="Nombre"
             className={`flex-1 px-4 py-2 rounded-lg border ${theme.borderColor} focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all ${theme.cardBg}`}
           />
           <button
@@ -213,7 +213,7 @@ export const PointsTable = ({ theme }: PointsTableProps) => {
             className={`flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-opacity-90 transition-all animate-float`}
           >
             <UserPlus size={20} />
-            Invocar Amigo
+            Invocar Boludo
           </button>
         </div>
 
@@ -309,7 +309,7 @@ export const PointsTable = ({ theme }: PointsTableProps) => {
             {friends.length === 0 && (
               <tr>
                 <td colSpan={4} className="px-6 py-8 text-center text-gray-500">
-                  ¡Forever Alone! 🥺 Agrega amigos para empezar
+                  No hay boludos todavía, agregá al menos uno, culiao.
                 </td>
               </tr>
             )}
@@ -323,7 +323,7 @@ export const PointsTable = ({ theme }: PointsTableProps) => {
           <Dialog.Content className={`fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-lg ${theme.cardBg} rounded-xl shadow-lg p-6 animate-fadeIn border-2 ${theme.borderColor}`}>
             <div className="flex justify-between items-center mb-4">
               <Dialog.Title className="text-xl font-bold">
-                Historial de {selectedFriend?.name} 📊
+                Historial del boludo ({selectedFriend?.name}) 📊
               </Dialog.Title>
               <Dialog.Close className="text-gray-400 hover:text-gray-600">
                 <X size={24} />
@@ -353,7 +353,7 @@ export const PointsTable = ({ theme }: PointsTableProps) => {
               ))}
               {selectedFriend?.history.length === 0 && (
                 <div className="text-center text-gray-500 py-8">
-                  No hay historial todavía 😴
+                  El boludo no tiene historial
                 </div>
               )}
             </ScrollArea>
