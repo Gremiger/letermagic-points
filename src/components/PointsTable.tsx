@@ -1,7 +1,10 @@
 
 import React from "react";
-import { UserPlus, UserMinus, Plus, Minus, Trash2 } from "lucide-react";
+import { UserPlus, UserMinus, Plus, Minus, Trash2, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import * as Dialog from "@radix-ui/react-dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
 
 interface PointCategory {
   id: string;
@@ -11,10 +14,18 @@ interface PointCategory {
   textColor: string;
 }
 
+interface PointHistory {
+  id: string;
+  timestamp: Date;
+  categoryName: string;
+  points: number;
+}
+
 interface Friend {
   id: string;
   name: string;
   points: number;
+  history: PointHistory[];
 }
 
 const DEFAULT_CATEGORIES: PointCategory[] = [
@@ -56,6 +67,7 @@ export const PointsTable = () => {
     name: "",
     points: 0,
   });
+  const [selectedFriend, setSelectedFriend] = React.useState<Friend | null>(null);
   const { toast } = useToast();
 
   const addFriend = () => {
@@ -72,6 +84,7 @@ export const PointsTable = () => {
       id: Date.now().toString(),
       name: newFriendName.trim(),
       points: 0,
+      history: [],
     };
     
     setFriends([...friends, newFriend]);
@@ -152,11 +165,23 @@ export const PointsTable = () => {
     if (!category) return;
 
     setFriends(
-      friends.map((friend) =>
-        friend.id === id
-          ? { ...friend, points: friend.points + category.points }
-          : friend
-      )
+      friends.map((friend) => {
+        if (friend.id === id) {
+          const newHistory: PointHistory = {
+            id: Date.now().toString(),
+            timestamp: new Date(),
+            categoryName: category.name,
+            points: category.points,
+          };
+          
+          return {
+            ...friend,
+            points: friend.points + category.points,
+            history: [newHistory, ...friend.history],
+          };
+        }
+        return friend;
+      })
     );
     
     const friend = friends.find(f => f.id === id);
@@ -235,7 +260,12 @@ export const PointsTable = () => {
             {friends.map((friend) => (
               <tr key={friend.id} className="hover:bg-gray-50 transition-colors">
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                  {friend.name}
+                  <button
+                    onClick={() => setSelectedFriend(friend)}
+                    className="hover:text-primary transition-colors hover:underline"
+                  >
+                    {friend.name}
+                  </button>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm">
                   <span className={`font-bold ${friend.points >= 0 ? 'text-green-600' : 'text-red-600'}`}>
@@ -282,6 +312,50 @@ export const PointsTable = () => {
           </tbody>
         </table>
       </div>
+
+      <Dialog.Root open={!!selectedFriend} onOpenChange={() => setSelectedFriend(null)}>
+        <Dialog.Portal>
+          <Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm animate-fadeIn" />
+          <Dialog.Content className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-white rounded-xl shadow-lg p-6 animate-fadeIn">
+            <div className="flex justify-between items-center mb-4">
+              <Dialog.Title className="text-xl font-bold">
+                Historial de {selectedFriend?.name} 📊
+              </Dialog.Title>
+              <Dialog.Close className="text-gray-400 hover:text-gray-600">
+                <X size={24} />
+              </Dialog.Close>
+            </div>
+            
+            <ScrollArea className="h-[400px] pr-4">
+              {selectedFriend?.history.map((entry, index) => (
+                <div key={entry.id}>
+                  <div className="py-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-500">
+                        {new Date(entry.timestamp).toLocaleString()}
+                      </span>
+                      <span className={`font-semibold ${entry.points >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                        {entry.points >= 0 ? "+" : ""}{entry.points} puntos
+                      </span>
+                    </div>
+                    <div className="text-gray-700 mt-1">
+                      {entry.categoryName}
+                    </div>
+                  </div>
+                  {index < selectedFriend.history.length - 1 && (
+                    <Separator />
+                  )}
+                </div>
+              ))}
+              {selectedFriend?.history.length === 0 && (
+                <div className="text-center text-gray-500 py-8">
+                  No hay historial todavía 😴
+                </div>
+              )}
+            </ScrollArea>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
     </div>
   );
 };
