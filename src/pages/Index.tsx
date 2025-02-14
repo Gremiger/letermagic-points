@@ -5,7 +5,7 @@ import { ThemeSelector } from "@/components/ThemeSelector";
 import { THEMES, ThemeStyle } from "@/types/theme";
 
 const Index = () => {
-  const [currentTheme, setCurrentTheme] = React.useState<ThemeStyle>('meme');
+  const [currentTheme, setCurrentTheme] = React.useState<ThemeStyle>('modern');
   const theme = THEMES.find(t => t.id === currentTheme) || THEMES[0];
 
   return (
@@ -20,7 +20,7 @@ const Index = () => {
             LeTim Points 🏆
           </h1>
           <p className="text-gray-600">
-            El sistema de puntos más memero del multiverso 🌌
+            El sistema de puntos de LeTim 🌌
           </p>
         </div>
         <PointsTable theme={theme} />
