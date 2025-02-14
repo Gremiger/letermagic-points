@@ -1,15 +1,72 @@
 
 import React from "react";
-import { UserPlus, UserMinus, Trash2 } from "lucide-react";
+import { UserPlus, UserMinus, Plus, Minus, Trash2, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { Friend, PointCategory, DEFAULT_CATEGORIES } from "@/types/points";
-import { FriendHistory } from "./FriendHistory";
-import { CategoryManager } from "./CategoryManager";
+import * as Dialog from "@radix-ui/react-dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
+
+interface PointCategory {
+  id: string;
+  name: string;
+  points: number;
+  backgroundColor: string;
+  textColor: string;
+}
+
+interface PointHistory {
+  id: string;
+  timestamp: Date;
+  categoryName: string;
+  points: number;
+}
+
+interface Friend {
+  id: string;
+  name: string;
+  points: number;
+  history: PointHistory[];
+}
+
+const DEFAULT_CATEGORIES: PointCategory[] = [
+  {
+    id: "1",
+    name: "Discord Gaming 🎮",
+    points: 5,
+    backgroundColor: "bg-[#8B5CF6]",
+    textColor: "text-white"
+  },
+  {
+    id: "2",
+    name: "Juntada IRL 🍺",
+    points: 10,
+    backgroundColor: "bg-[#F97316]",
+    textColor: "text-white"
+  },
+  {
+    id: "3",
+    name: "WhatsApp Memes 🤣",
+    points: 3,
+    backgroundColor: "bg-[#D946EF]",
+    textColor: "text-white"
+  },
+  {
+    id: "4",
+    name: "F por Inactividad 💀",
+    points: -5,
+    backgroundColor: "bg-[#DC2626]",
+    textColor: "text-white"
+  }
+];
 
 export const PointsTable = () => {
   const [friends, setFriends] = React.useState<Friend[]>([]);
   const [newFriendName, setNewFriendName] = React.useState("");
   const [categories, setCategories] = React.useState<PointCategory[]>(DEFAULT_CATEGORIES);
+  const [newCategory, setNewCategory] = React.useState({
+    name: "",
+    points: 0,
+  });
   const [selectedFriend, setSelectedFriend] = React.useState<Friend | null>(null);
   const { toast } = useToast();
 
@@ -38,8 +95,8 @@ export const PointsTable = () => {
     });
   };
 
-  const addCategory = (name: string, points: number) => {
-    if (!name.trim() || !points) {
+  const addCategory = () => {
+    if (!newCategory.name.trim() || !newCategory.points) {
       toast({
         title: "Error 404: Cerebro no encontrado",
         description: "Necesitas un nombre y puntos para la categoría",
@@ -59,13 +116,14 @@ export const PointsTable = () => {
     
     const newCat: PointCategory = {
       id: Date.now().toString(),
-      name: name.trim(),
-      points: points,
+      name: newCategory.name.trim(),
+      points: newCategory.points,
       backgroundColor: randomColor.bg,
       textColor: randomColor.text,
     };
     
     setCategories([...categories, newCat]);
+    setNewCategory({ name: "", points: 0 });
     toast({
       title: "¡Nueva categoría desbloqueada! 🎉",
       description: `${newCat.name} ahora es parte del multiverso`,
@@ -109,7 +167,7 @@ export const PointsTable = () => {
     setFriends(
       friends.map((friend) => {
         if (friend.id === id) {
-          const newHistory = {
+          const newHistory: PointHistory = {
             id: Date.now().toString(),
             timestamp: new Date(),
             categoryName: category.name,
@@ -155,11 +213,29 @@ export const PointsTable = () => {
           </button>
         </div>
 
-        <CategoryManager
-          categories={categories}
-          onAddCategory={addCategory}
-          onRemoveCategory={removeCategory}
-        />
+        <div className="flex gap-4">
+          <input
+            type="text"
+            value={newCategory.name}
+            onChange={(e) => setNewCategory({ ...newCategory, name: e.target.value })}
+            placeholder="Nueva categoría (ej: 'Raid Boss 🗡️')"
+            className="flex-1 px-4 py-2 rounded-lg border border-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all bg-white bg-opacity-90"
+          />
+          <input
+            type="number"
+            value={newCategory.points || ""}
+            onChange={(e) => setNewCategory({ ...newCategory, points: Number(e.target.value) })}
+            placeholder="Puntos"
+            className="w-24 px-4 py-2 rounded-lg border border-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all bg-white bg-opacity-90"
+          />
+          <button
+            onClick={addCategory}
+            className="flex items-center gap-2 px-4 py-2 bg-[#0EA5E9] text-white rounded-lg hover:bg-opacity-90 transition-all animate-float"
+          >
+            <Plus size={20} />
+            Nueva Categoría
+          </button>
+        </div>
       </div>
 
       <div className="bg-white bg-opacity-75 backdrop-blur-lg rounded-xl shadow-lg overflow-hidden border-2 border-primary hover:border-[#D946EF] transition-colors">
@@ -237,10 +313,49 @@ export const PointsTable = () => {
         </table>
       </div>
 
-      <FriendHistory
-        friend={selectedFriend}
-        onClose={() => setSelectedFriend(null)}
-      />
+      <Dialog.Root open={!!selectedFriend} onOpenChange={() => setSelectedFriend(null)}>
+        <Dialog.Portal>
+          <Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm animate-fadeIn" />
+          <Dialog.Content className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-white rounded-xl shadow-lg p-6 animate-fadeIn">
+            <div className="flex justify-between items-center mb-4">
+              <Dialog.Title className="text-xl font-bold">
+                Historial de {selectedFriend?.name} 📊
+              </Dialog.Title>
+              <Dialog.Close className="text-gray-400 hover:text-gray-600">
+                <X size={24} />
+              </Dialog.Close>
+            </div>
+            
+            <ScrollArea className="h-[400px] pr-4">
+              {selectedFriend?.history.map((entry, index) => (
+                <div key={entry.id}>
+                  <div className="py-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-500">
+                        {new Date(entry.timestamp).toLocaleString()}
+                      </span>
+                      <span className={`font-semibold ${entry.points >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                        {entry.points >= 0 ? "+" : ""}{entry.points} puntos
+                      </span>
+                    </div>
+                    <div className="text-gray-700 mt-1">
+                      {entry.categoryName}
+                    </div>
+                  </div>
+                  {index < selectedFriend.history.length - 1 && (
+                    <Separator />
+                  )}
+                </div>
+              ))}
+              {selectedFriend?.history.length === 0 && (
+                <div className="text-center text-gray-500 py-8">
+                  No hay historial todavía 😴
+                </div>
+              )}
+            </ScrollArea>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
     </div>
   );
 };
