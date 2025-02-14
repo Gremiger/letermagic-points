@@ -13,15 +13,6 @@ export interface Theme {
 
 export const THEMES: Theme[] = [
   {
-    id: 'meme',
-    name: 'Modo Memero',
-    icon: '🤣',
-    bgGradient: 'from-[#9b87f5] via-[#D946EF] to-[#F97316]',
-    cardBg: 'bg-white bg-opacity-90',
-    borderColor: 'border-primary hover:border-[#D946EF]',
-    titleGradient: 'from-primary to-[#D946EF]'
-  },
-  {
     id: 'modern',
     name: 'Sobrio y Moderno',
     icon: '🎯',
@@ -29,6 +20,15 @@ export const THEMES: Theme[] = [
     cardBg: 'bg-white bg-opacity-95',
     borderColor: 'border-gray-200 hover:border-gray-300',
     titleGradient: 'from-gray-700 to-gray-900'
+  },
+  {
+    id: 'meme',
+    name: 'Modo Memero',
+    icon: '🤣',
+    bgGradient: 'from-[#9b87f5] via-[#D946EF] to-[#F97316]',
+    cardBg: 'bg-white bg-opacity-90',
+    borderColor: 'border-primary hover:border-[#D946EF]',
+    titleGradient: 'from-primary to-[#D946EF]'
   },
   {
     id: 'minecraft',

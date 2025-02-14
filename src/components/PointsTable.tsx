@@ -222,7 +222,7 @@ export const PointsTable = ({ theme }: PointsTableProps) => {
             type="text"
             value={newCategory.name}
             onChange={(e) => setNewCategory({ ...newCategory, name: e.target.value })}
-            placeholder="Nueva categoría (ej: 'Raid Boss 🗡️')"
+            placeholder="Nueva categoría (ej: 'Counter 🔫')"
             className={`flex-1 px-4 py-2 rounded-lg border ${theme.borderColor} focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all ${theme.cardBg}`}
           />
           <input
