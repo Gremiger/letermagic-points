@@ -1,32 +1,11 @@
 
-import { keyframes } from "@emotion/react";
+// Define animation keyframes as string templates for reference
+// These are already implemented in index.css as actual CSS animations
 
-export const pointIncrease = keyframes`
-  0% {
-    transform: scale(1);
-    color: inherit;
-  }
-  50% {
-    transform: scale(1.5);
-    color: #22c55e; /* Green color */
-  }
-  100% {
-    transform: scale(1);
-    color: inherit;
-  }
-`;
+export const pointIncrease = "animate-point-increase";
+export const pointDecrease = "animate-point-decrease";
 
-export const pointDecrease = keyframes`
-  0% {
-    transform: scale(1);
-    color: inherit;
-  }
-  50% {
-    transform: scale(1.5);
-    color: #ef4444; /* Red color */
-  }
-  100% {
-    transform: scale(1);
-    color: inherit;
-  }
-`;
+// Export animation class names for easy use in components
+export const getPointAnimationClass = (points: number): string => {
+  return points >= 0 ? pointIncrease : pointDecrease;
+};
