@@ -1,4 +1,5 @@
-import React from "react";
+
+import React, { useState, useRef, useEffect } from "react";
 import { UserPlus, UserMinus, Plus, Minus, Trash2, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import * as Dialog from "@radix-ui/react-dialog";
@@ -26,6 +27,7 @@ interface Friend {
   name: string;
   points: number;
   history: PointHistory[];
+  animating?: boolean;
 }
 
 const DEFAULT_CATEGORIES: PointCategory[] = [
@@ -64,14 +66,14 @@ interface PointsTableProps {
 }
 
 export const PointsTable = ({ theme }: PointsTableProps) => {
-  const [friends, setFriends] = React.useState<Friend[]>([]);
-  const [newFriendName, setNewFriendName] = React.useState("");
-  const [categories, setCategories] = React.useState<PointCategory[]>(DEFAULT_CATEGORIES);
-  const [newCategory, setNewCategory] = React.useState({
+  const [friends, setFriends] = useState<Friend[]>([]);
+  const [newFriendName, setNewFriendName] = useState("");
+  const [categories, setCategories] = useState<PointCategory[]>(DEFAULT_CATEGORIES);
+  const [newCategory, setNewCategory] = useState({
     name: "",
     points: 0,
   });
-  const [selectedFriend, setSelectedFriend] = React.useState<Friend | null>(null);
+  const [selectedFriend, setSelectedFriend] = useState<Friend | null>(null);
   const { toast } = useToast();
 
   const addFriend = () => {
@@ -168,33 +170,50 @@ export const PointsTable = ({ theme }: PointsTableProps) => {
     const category = categories.find(c => c.id === categoryId);
     if (!category) return;
 
+    // First set animating flag
     setFriends(
       friends.map((friend) => {
         if (friend.id === id) {
-          const newHistory: PointHistory = {
-            id: Date.now().toString(),
-            timestamp: new Date(),
-            categoryName: category.name,
-            points: category.points,
-          };
-          
           return {
             ...friend,
-            points: friend.points + category.points,
-            history: [newHistory, ...friend.history],
+            animating: true
           };
         }
         return friend;
       })
     );
-    
-    const friend = friends.find(f => f.id === id);
-    if (friend) {
-      toast({
-        title: category.points > 0 ? "¡STONKS! 📈" : "NOT STONKS 📉",
-        description: `${category.points} puntos para ${friend.name} por ${category.name}`,
-      });
-    }
+
+    // Then update the points after a small delay
+    setTimeout(() => {
+      setFriends(
+        friends.map((friend) => {
+          if (friend.id === id) {
+            const newHistory: PointHistory = {
+              id: Date.now().toString(),
+              timestamp: new Date(),
+              categoryName: category.name,
+              points: category.points,
+            };
+            
+            return {
+              ...friend,
+              points: friend.points + category.points,
+              history: [newHistory, ...friend.history],
+              animating: false
+            };
+          }
+          return friend;
+        })
+      );
+      
+      const friend = friends.find(f => f.id === id);
+      if (friend) {
+        toast({
+          title: category.points > 0 ? "¡STONKS! 📈" : "NOT STONKS 📉",
+          description: `${category.points} puntos para ${friend.name} por ${category.name}`,
+        });
+      }
+    }, 100);
   };
 
   return (
@@ -272,7 +291,15 @@ export const PointsTable = ({ theme }: PointsTableProps) => {
                   </button>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm">
-                  <span className={`font-bold ${friend.points >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  <span 
+                    className={`font-bold ${friend.points >= 0 ? 'text-green-600' : 'text-red-600'} ${
+                      friend.animating 
+                        ? friend.history.length > 0 && friend.history[0].points > 0
+                          ? 'animate-point-increase' 
+                          : 'animate-point-decrease'
+                        : ''
+                    }`}
+                  >
                     {friend.points}
                   </span>
                 </td>

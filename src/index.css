@@ -93,6 +93,40 @@
   animation: float 3s ease-in-out infinite;
 }
 
+@keyframes point-increase {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.5);
+    color: #22c55e;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes point-decrease {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.5);
+    color: #ef4444;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-point-increase {
+  animation: point-increase 0.6s ease-in-out;
+}
+
+.animate-point-decrease {
+  animation: point-decrease 0.6s ease-in-out;
+}
+
 /* Transiciones suaves */
 .transition-all {
   transition-property: all;
